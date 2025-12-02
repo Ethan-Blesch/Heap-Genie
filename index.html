@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>React App</title>
+     <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>  
+  <h1> Heap Genie </h1>
+  <p>A tool to help you identify viable heap exploit techniques based on available interactions. Note: This is for advanced heap exploits with tricky constraints. It does not cover basic exploits like basic tcache freelist poisoning.</p>
+  <b>By S3af</b>
+
+  <div id="body-sections">
+    <div id="questions_outer">
+      <h3>Questions</h3>
+      <div id = "questions">
+        <div id = "vulnType">
+            <h3>Vulnerability type</h3>
+        </div>
+        <div id = "binType">
+            <h3>Accessible bins</h3>
+        </div>
+        <div id = "constraints">
+          <h3>Sizes & constraints</h3>
+        </div>
+      </div>
+    </div>
+    <div id="techniques_outer">
+      <h3>Possible techniques</h3>
+      <div id="techniques"></div>
+    </div>
+  </div>
+  <div id="controls">
+    <button id="calculate-btn" type="button" onclick="calculateAnswers()">Calculate answers</button>
+  </div>
+  <script src="script.js"> </script>
+</body>
+</html>
