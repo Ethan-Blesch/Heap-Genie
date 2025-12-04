@@ -79,6 +79,7 @@
 }
 
 /* Layout for questions and techniques sections */
+/* Layout for questions and techniques sections */
 #body-sections{
   display: grid;
   grid-template-columns: 1fr 1fr; /* two equal columns */
@@ -86,8 +87,41 @@
   height: 80vh;
 }
 
-#techniques, #questions {
+/* Arrange the inner question groups so vulnType and binType sit side-by-side,
+   while constraints spans the full width below. */
+#questions {
   border: 1px solid #ccc;
   height: 80%;
-  overflow-y: scroll;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+#techniques {
+  border: 1px solid #ccc;
+  height: 80%;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+#vulnType {
+  display: inline-block;
+  padding: 10px;
+  border: 2px solid;
+}
+
+#binType {
+  display: inline-block;
+  padding: 10px;
+  border: 2px solid;
+}
+
+#constraints {
+  border: 2px solid;
+  padding: 10px;
+  grid-column: span 2;
 }

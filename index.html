@@ -1,31 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <link rel="manifest" href="/manifest.json" />
-    <title>React App</title>
-     <link rel="stylesheet" type="text/css" href="style.css">
-  </head>
-  <body>  
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>React App</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
   <h1> Heap Genie </h1>
-  <p>A tool to help you identify viable heap exploit techniques based on available interactions. Note: This is for advanced heap exploits with tricky constraints. It does not cover basic exploits like basic tcache freelist poisoning.</p>
+  <p>A tool for searching & categorizing the exploits described in Shellphish's <a href="https://github.com/shellphish/how2heap">How2Heap repository</a></p>
+  <br>
+  <p><b>NOTE:</b> When selecting vulnerabilities, you will be shown exploits that REQUIRE that specific ability. E.g, selecting an arbitrary write will not show exploits that only need an overflow or an off-by-one; if you want those, you have to select them yourself. </p>
   <b>By S3af</b>
 
   <div id="body-sections">
     <div id="questions_outer">
       <h3>Questions</h3>
-      <div id = "questions">
-        <div id = "vulnType">
-            <h3>Vulnerability type</h3>
+      <div id="questions">
+        <div id="vulnType">
+          <h3>Vulnerability type</h3>
+          <input type="checkbox" id="uaf" name="choices" value="value1">
+          <label for="uaf">UAF</label>
+          <br>
+          <input type="checkbox" id="overflow" name="choices" value="value1">
+          <label for="overflow">Overflow (not single byte)</label>
+          <br>
+          <input type="checkbox" id="offByOne" name="choices" value="value1">
+          <label for="offByOne">Off-by-one (controlled)</label>
+          <br>
+          <input type="checkbox" id="nullByte" name="choices" value="value1">
+          <label for="nullByte">Null byte overflow</label>
+          <br>
+          <input type="checkbox" id="arbFree" name="choices" value="value1">
+          <label for="arbFree">Arbitrary/controlled free</label>
+          <br>
+          <input type="checkbox" id="doubleFree" name="choices" value="value1">
+          <label for="doubleFree">Double free</label>
+          <br>
+          <input type="checkbox" id="heapControl" name="choices" value="value1">
+          <label for="heapControl">Arbitrary write/heap control</label>
+          </input>
         </div>
-        <div id = "binType">
-            <h3>Accessible bins</h3>
+        <div id="binType">
+          <h3>Bins:</h3>
+          <input type="checkbox" id="tcache" name="choices" value="value1" checked>
+          <label for="tcache">Tcache</label>
+          <br>
+          <input type="checkbox" id="fastbins" name="choices" value="value1" checked>
+          <label for="fastbins">Fastbins</label>
+          <br>
+          <input type="checkbox" id="unsortedbins" name="choices" value="value1" checked>
+          <label for="unsortedbins">Unsortedbins</label>
+          <br>
+          <input type="checkbox" id="smallbins" name="choices" value="value1" checked>
+          <label for="smallbins">Smallbins</label>
+          <br>
+          <input type="checkbox" id="largebins" name="choices" value="value1" checked>
+          <label for="largebins">Largebins</label>
+          </input>
         </div>
-        <div id = "constraints">
-          <h3>Sizes & constraints</h3>
+        <div id="constraints">
+          <h3>Misc/constraints</h3>
+          <input type="checkbox" id="mmap" name="choices" value="value1" checked>
+          <label for="mmap">Include techniques that require mmapped chunks</label>
+          <br>
+          <input type="checkbox" id="topChunk" name="choices" value="value1" checked>
+          <label for="mmap">Include techniques that require reaching the top chunk</label>
+          <br>
+          <input type="checkbox" id="leak" name="choices" value="value1" checked>
+          <label for="mmap">Include techniques that require a previous leak</label>
+          <br>
+          <input type="checkbox" id="old" name="choices" value="value1" >
+          <label for="mmap">Include techniques for old libc versions</label>
+          <br>
         </div>
       </div>
     </div>
@@ -34,9 +86,7 @@
       <div id="techniques"></div>
     </div>
   </div>
-  <div id="controls">
-    <button id="calculate-btn" type="button" onclick="calculateAnswers()">Calculate answers</button>
-  </div>
   <script src="script.js"> </script>
 </body>
+
 </html>

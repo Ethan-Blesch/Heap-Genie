@@ -123,50 +123,6 @@ function createAnswerTemplate(name, link){
     return container;
 }
 
-class Question {
-    constructor(text, answerElement, containerId, tooltip){
-        this.text = text;
-        this.answerElement = answerElement;
-        this.tooltip = tooltip;
-        this.answer = null;
-        document.getElementById(containerId).appendChild(createQuestionTemplate(this.text, this.answerElement, this.tooltip) );
-    }
-
-    getAnswer(){
-        console.log("Answer not implemented by child class!")
-    }
-}
-
-class yesNoQuestion extends Question {
-    constructor(text, containerId, tooltip){
-        var answerElement = document.createElement('input');
-        answerElement.type = 'checkbox';
-        const yesOption = document.createElement('option');
-        yesOption.value = 'yes';
-        yesOption.text = 'Yes';
-        const noOption = document.createElement('option');
-        noOption.value = 'no';
-        noOption.text = 'No';
-
-        super(text, answerElement, containerId, tooltip);
-    }
-    getAnswer(){
-        return this.answerElement.checked;
-    }
-}
-
-class numberQuestion extends Question {
-    constructor(text, min, max, containerId, tooltip){
-        var answerElement = document.createElement('input');
-        answerElement.type = 'number';
-        answerElement.min = min;
-        answerElement.max = max;
-        super(text, answerElement, containerId, tooltip);        
-    }
-    getAnswer(){
-        return parseFloat(this.answerElement.value);
-    }
-}
 
 
 
@@ -174,8 +130,15 @@ class technique {
     tags = {}
     constructor(name, link, tags){
         this.tags = tags
-        var answerTemplate = createAnswerTemplate(name, link);
-        document.getElementById("techniques").appendChild(answerTemplate);  
+        this.answerTemplate = createAnswerTemplate(name, link);
+        document.getElementById("techniques").appendChild(this.answerTemplate);  
+        this.hide()
+    }
+    hide(){
+        this.answerTemplate.style.display = "none"
+    }
+    show(){
+        this.answerTemplate.style.display = "block"
     }
 }
 
@@ -251,23 +214,7 @@ const constraintsTooltips = {
 };
 
 
-var canReadAfterFree = new yesNoQuestion("Read from freed chunks? ", "vulnType", vulnTooltips.readAfterFree)
-var canWriteAfterFree = new yesNoQuestion("Write to freed chunks? ", "vulnType", vulnTooltips.writeAfterFree)
-var canDoubleFree = new yesNoQuestion("Double-free? ", "vulnType", vulnTooltips.doubleFree)
-var canOverflow = new yesNoQuestion("Overflow (not counting off-by-one)? ", "vulnType", vulnTooltips.overflow)
-var nullByte = new yesNoQuestion("Null-byte/off-by-one overflow? ", "vulnType", vulnTooltips.nullByte)
-var canFreeArbitraryBullshit = new yesNoQuestion("Free a controlled pointer (for crafting fake chunks)? ", "vulnType", vulnTooltips.freeArbitraryBullshit)
 
-var tcache = new yesNoQuestion("tcache ", "binType", binTooltips.tcache)
-var fastbins = new yesNoQuestion("fastbins ", "binType", binTooltips.fastbins)
-var smallbins = new yesNoQuestion("smallbins ","binType", binTooltips.smallbins)
-var largebins = new yesNoQuestion("largebins ", "binType", binTooltips.largebins)
-var unsortedbins = new yesNoQuestion("unsortedbins ", "binType", binTooltips.unsortedbins)
-
-var consolidate = new yesNoQuestion("Free w/ size >= 0x3f0 (for consolidation)?", "constraints", constraintsTooltips.consolidate)
-var sort = new yesNoQuestion("Trigger bin sorting? ", "constraints", constraintsTooltips.sort)
-var old = new yesNoQuestion("Show techniques for older libc versions? ", "constraints", constraintsTooltips.old)
-var mmap = new yesNoQuestion("Get an mmapped chunk? ", "constraints", constraintsTooltips.mmap)
 
 
 
@@ -280,8 +227,9 @@ var mmap = new yesNoQuestion("Get an mmapped chunk? ", "constraints", constraint
 
 */
 
-var techniques = {
-    fastbinDup: new technique(
+//TODO: finish implementing "leak" tag 
+var techniques = [
+    new technique(
         "Fastbin Duplication", 
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.35/fastbin_dup.c",
         {
@@ -291,17 +239,17 @@ var techniques = {
         }
     ),
 
-    fastbinConsolidate: new technique(
+    new technique(
         "Fastbin dup consolidate",
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.35/fastbin_dup_consolidate.c",
         {
             bins: ["fastbins"],
             vulns: ["doubleFree"],
-            misc: ["consolidate"]
+            misc: []
         }
     ),
     
-    unsafeUnlink: new technique(
+    new technique(
         "Unsafe unlink", 
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.35/unsafe_unlink.c",
         {
@@ -311,7 +259,7 @@ var techniques = {
         }
     ),
     
-    houseOfSpirit: new technique(
+    new technique(
         "House of Spirit", 
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.35/house_of_spirit.c",
         {
@@ -321,17 +269,17 @@ var techniques = {
         }
     ),
 
-    nullBytePoison: new technique(
+    new technique(
         "Poison null byte",
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.35/poison_null_byte.c",
         {
             bins: ["smallbins", "largebins", "unsorterdbins"],
             vulns: ["nullByte", "offByOne", "overflow"],
-            misc: ["sort", "consolidate"],
+            misc: [],
         }
     ),
     
-    houseOfLore: new technique(
+    new technique(
         "House of Lore", 
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.35/house_of_lore.c",
         {
@@ -341,7 +289,7 @@ var techniques = {
         }
     ),
 
-    overlappingChunks: new technique(
+    new technique(
         "Overlapping chunks", 
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.27/overlapping_chunks.c",
         {
@@ -351,7 +299,7 @@ var techniques = {
         }
     ),
 
-    overlappingChunks2: new technique(
+    new technique(
         "Overlapping chunks 2",
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.23/overlapping_chunks_2.c",
         {
@@ -361,7 +309,7 @@ var techniques = {
         }
     ),
 
-    mmapOverlap: new technique(
+    new technique(
         "Mmap overlapping chunks", 
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.35/mmap_overlapping_chunks.c",
         {
@@ -371,7 +319,7 @@ var techniques = {
         }
     ),
 
-    houseOfForce: new technique(
+    new technique(
         "House of force", 
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.27/house_of_force.c",
         {
@@ -381,7 +329,7 @@ var techniques = {
         }
     ),
 
-    unsortedBinIntoStack: new technique(
+    new technique(
         "Unsorted bin into stack", 
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.27/unsorted_bin_into_stack.c",
         {
@@ -391,7 +339,7 @@ var techniques = {
         }
     ),
 
-    unsortedBinAttack: new technique(
+    new technique(
         "Unsorted bin attack",
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.27/unsorted_bin_attack.c",
         {
@@ -401,27 +349,27 @@ var techniques = {
         }
     ),
 
-    largeBinAttack: new technique(
+    new technique(
         "Large bin attack", 
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.35/large_bin_attack.c",
         {
             bins: ["largebins"],
             vulns: ["writeAfterFree", "overflow"],
-            misc: ["sort"],
+            misc: [],
         }
     ),
 
-    houseOfEinherjar: new technique(
+    new technique(
         "House of Einherjar",
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.35/house_of_einherjar.c",
         {
             bins: ["unsortedbins"],
             vulns: ["overflow", "nullByte", "offByOne"],
-            misc: []
+            misc: ["leak"]
         }
     ),
 
-    houseOfWater: new technique(
+    new technique(
         "House of Water",
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.36/house_of_water.c",
         {
@@ -431,27 +379,27 @@ var techniques = {
         }
     ),
 
-    houseOfOrange: new technique(
+    new technique(
         "House of Orange",
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.23/house_of_orange.c",
         {
             bins: [],
             vulns: ["overflow"],
-            misc: ["old", "topChunk"]
+            misc: ["old", "topChunk", "leak"]
         }
     ),
 
-    houseOfTangerine: new technique(
+    new technique(
         "House of Tangerine",
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.39/house_of_tangerine.c",
         {
             bins: [],
             vulns: ["overflow"],
-            misc: ["topChunk"]
+            misc: ["topChunk", "leak"]
         }
     ),
 
-    houseOfRoman: new technique(
+    new technique(
         "House of Roman",
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.23/house_of_roman.c",
         {
@@ -461,16 +409,177 @@ var techniques = {
         }
     ),
 
-    tcachePoison: new technique(
+    new technique(
         "Tcache Poison",
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.35/tcache_poisoning.c",
         {
             bins: ["tcache"],
-            vulns: ["overflow", "writeAfterFree", "readAfterFree"]
+            vulns: ["overflow", "writeAfterFree", "readAfterFree"],
+            misc: ["leak"]
         }
     ),
 
+
+    new technique(
+        "Tcache house of spirit",
+        "https://github.com/shellphish/how2heap/blob/master/glibc_2.35/tcache_house_of_spirit.c",
+        {
+            bins: ["tcache"],
+            vulns: ["freeArbitraryBullshit"],
+            misc: []
+        }
+    ),
+
+    new technique(
+        "House of Botcake",
+        "https://github.com/shellphish/how2heap/blob/master/glibc_2.35/house_of_botcake.c",
+        {
+            bins: ["tcache", "unsortedbins"],
+            vulns: ["doubleFree"],
+            misc: []
+        }
+    ),
+
+    new technique(
+        "Tcache stashing unlink",
+        "https://github.com/shellphish/how2heap/blob/master/glibc_2.35/tcache_stashing_unlink_attack.c",
+        {
+            bins: ["tcache", "smallbins"],
+            vulns: ["writeAfterFree", "overflow"],
+            misc: ["calloc"]
+        }
+    ),
+
+    new technique(
+        "Fastbin reverse into tcache",
+        "https://github.com/shellphish/how2heap/blob/master/glibc_2.35/fastbin_reverse_into_tcache.c",
+        {
+            bins: ["tcache", "fastbins"],
+            vulns: ["overflow", "writeAfterFree"],
+            misc: ["leak"],
+        }
+    ),
+
+    new technique(
+        "Fastbin House of Mind",
+        "https://github.com/shellphish/how2heap/blob/master/glibc_2.35/house_of_mind_fastbin.c",
+        {
+            bins: ["fastbins"],
+            vulns: ["overflow", "offByOne"],
+            misc: ["leak"]
+        }
+    ),
     
+    new technique(
+        "House of Storm",
+        "https://github.com/shellphish/how2heap/blob/master/glibc_2.27/house_of_storm.c",
+        {
+            bins: ["unsortedbins", "largebins"],
+            vulns: ["writeAfterFree", "overflow"],
+            misc: ["old"]
+        }
+    ),
+
+    new technique(
+        "House of Gods",
+        "https://github.com/shellphish/how2heap/blob/master/glibc_2.24/house_of_gods.c",
+        {
+            bins: ["unsortedbins"],
+            vulns: ["writeAfterFree", "overflow"],
+            misc: ["old", "leak"]
+        }
+    ),
+
+    new technique(
+        "Double protect (bypass safe-linking)",
+        "https://github.com/shellphish/how2heap/blob/master/glibc_2.36/safe_link_double_protect.c",
+        {
+            bins: ["tcache"],
+            vulns: ["writeAfterFree","overflow"],
+            misc: []
+        }
+    ),
+
+    new technique(
+        "Tcache metadata poisoning", 
+        "https://github.com/shellphish/how2heap/blob/master/glibc_2.36/safe_link_double_protect.c",
+        {
+            bins: ["tcache"], 
+            vulns: ["heapControl"],
+            misc: [""]
+        }
+    )   
+]
+
+function filterVulnType(candidates){
+    var vulns = []
+    var filteredCandidates = []
+    document.getElementById("uaf").checked ? vulns.push("writeAfterFree") : null;
+    document.getElementById("overflow").checked ? vulns.push("overflow") : null;
+    document.getElementById("offByOne").checked ? vulns.push("offByOne") : null;
+    document.getElementById("nullByte").checked ? vulns.push("nullByte") : null;
+    document.getElementById("arbFree").checked ? vulns.push("freeArbitraryBullshit") : null;
+    document.getElementById("doubleFree").checked ? vulns.push("doubleFree") : null;
+    document.getElementById("heapControl").checked ? vulns.push("heapControl") : null;
+
     
-    
+    for(const x of candidates){
+        var works = false; 
+
+        for(const vuln of vulns){
+            if(x.tags.vulns.includes(vuln)){
+                works = true
+                break
+            }
+        }
+        if(works){
+            filteredCandidates.push(x)
+        }
+
+    }
+    return filteredCandidates
 }
+
+function filterBinType(candidates){
+    var bins = []
+    var filteredCandidates = []
+
+    document.getElementById("tcache").checked ? bins.push("tcache") : null;
+    document.getElementById("fastbins").checked ? bins.push("fastbins") : null;
+    document.getElementById("unsortedbins").checked ? bins.push("unsortedbins") : null;
+    document.getElementById("largebins").checked ? bins.push("largebins") : null;
+    document.getElementById("smallbins").checked ? bins.push("smallbins") : null;
+
+    for(const x of candidates){
+        var works = true;
+
+        for(const bin of x.tags.bins){
+            if(!bins.includes(bin)){
+                works = false;
+            }
+        }
+        if(works){
+            filteredCandidates.push(x)
+        }
+    }
+    return filteredCandidates;
+}
+function calculateTechniques(){
+    for(const x of techniques){
+        x.hide()
+    }
+    var candidates = techniques; 
+
+    candidates = filterVulnType(candidates);
+    candidates = filterBinType(candidates);
+    
+    for(candidate of candidates){
+        candidate.show();
+    }
+
+}
+document.addEventListener('click', function(event) {
+  if (event.target.type === 'checkbox') {
+   calculateTechniques();
+  }
+});
