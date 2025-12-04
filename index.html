@@ -7,20 +7,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#000000" />
   <link rel="manifest" href="/manifest.json" />
-  <title>React App</title>
+  <title>Heap Genie</title>
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
   <h1> Heap Genie </h1>
   <p>A tool for searching & categorizing the exploits described in Shellphish's <a href="https://github.com/shellphish/how2heap">How2Heap repository</a></p>
-  <br>
-  <p><b>NOTE:</b> When selecting vulnerabilities, you will be shown exploits that REQUIRE that specific ability. E.g, selecting an arbitrary write will not show exploits that only need an overflow or an off-by-one; if you want those, you have to select them yourself. </p>
+  <p><b>NOTE:</b> When selecting vulnerabilities, you will be shown exploits that REQUIRE that specific ability. E.g, selecting an arbitrary write will not show exploits that only need an overflow or an off-by-one; if you want those, you have to select them yourself! </p>
   <b>By S3af</b>
-
+<hr>
   <div id="body-sections">
     <div id="questions_outer">
-      <h3>Questions</h3>
+      <h3>answer me my riddles three or some shit idk</h3>
       <div id="questions">
         <div id="vulnType">
           <h3>Vulnerability type</h3>
@@ -83,7 +82,11 @@
     </div>
     <div id="techniques_outer">
       <h3>Possible techniques</h3>
-      <div id="techniques"></div>
+      
+      <div id="techniques_wrapper">
+        <div id="techniques"></div>
+      </div>
+      
     </div>
   </div>
   <script src="script.js"> </script>
