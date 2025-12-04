@@ -265,7 +265,7 @@ var techniques = [
         {
             bins: ["fastbins"],
             vulns: ["freeArbitraryBullshit"],
-            misc: ["outsideHeap"]
+            misc: []
         }
     ),
 
@@ -273,8 +273,8 @@ var techniques = [
         "Poison null byte",
         "https://github.com/shellphish/how2heap/blob/master/glibc_2.35/poison_null_byte.c",
         {
-            bins: ["smallbins", "largebins", "unsorterdbins"],
-            vulns: ["nullByte", "offByOne", "overflow"],
+            bins: ["smallbins", "largebins", "unsortedbins"],
+            vulns: ["nullByte"],
             misc: [],
         }
     ),
@@ -285,7 +285,7 @@ var techniques = [
         {
             bins: ["unsortedbins", "smallbins", "largebins"],
             vulns: ["overflow", "writeAfterFree"],
-            misc: ["outsideHeap"]
+            misc: []
         }
     ),
 
@@ -506,7 +506,7 @@ var techniques = [
         {
             bins: ["tcache"], 
             vulns: ["heapControl"],
-            misc: [""]
+            misc: []
         }
     )   
 ]
@@ -528,6 +528,7 @@ function filterVulnType(candidates){
 
         for(const vuln of vulns){
             if(x.tags.vulns.includes(vuln)){
+                console.log(x)
                 works = true
                 break
             }
@@ -552,9 +553,41 @@ function filterBinType(candidates){
 
     for(const x of candidates){
         var works = true;
-
+        if(x.tags.bins.length == 0){
+            filteredCandidates.push(x);
+            continue;
+        }
         for(const bin of x.tags.bins){
             if(!bins.includes(bin)){
+                works = false;
+            }
+        }
+        if(works){
+            filteredCandidates.push(x)
+        }
+    }
+    return filteredCandidates;
+}
+
+function filterMisc(candidates){
+    var misc = [];
+    var filteredCandidates = [];
+
+    document.getElementById("mmap").checked ? misc.push("mmap") : null
+    document.getElementById("topChunk").checked ? misc.push("topChunk") : null
+    document.getElementById("leak").checked ? misc.push("leak") : null
+    document.getElementById("old").checked ? misc.push("old") : null
+
+    for(const x of candidates){
+        var works = true;
+        if(x.tags.misc.length == 0){
+            filteredCandidates.push(x);
+            continue;
+        }
+        for(const m of x.tags.misc){
+            if(!misc.includes(m)){
+                //console.log(m)
+                //console.log(x)
                 works = false;
             }
         }
@@ -572,7 +605,7 @@ function calculateTechniques(){
 
     candidates = filterVulnType(candidates);
     candidates = filterBinType(candidates);
-    
+    candidates = filterMisc(candidates);
     for(candidate of candidates){
         candidate.show();
     }
